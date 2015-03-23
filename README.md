@@ -1,8 +1,8 @@
 # LightsOut
 LightsOut is a Kerbal Space Program add-on that allows the user to switch between day and night mode in the VAB and SPH.
 
-### Version
-v0.1 (Compatible with Kerbal Space Program v0.90)
+### Download
+[v0.1.1](https://github.com/nodrog6/LightsOut/releases/download/v0.1.1/LightsOut-v0.1.1.zip) (Compatible with Kerbal Space Program v0.90)
 
 ### Hotkeys
 * **L** - Toggle day/night and all part lights
