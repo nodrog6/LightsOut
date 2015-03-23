@@ -112,7 +112,7 @@ namespace LightsOut {
 			// Toggle all part lights
 			SetPartLights(newTime == EditorTime.Night);
 
-			if (newTime == EditorTime.Day) {
+			if (newTime == EditorTime.Night) {
 				launcherButton.SetTexture((Texture)GameDatabase.Instance.GetTexture(sunIcon, false));
 			}
 			else {
