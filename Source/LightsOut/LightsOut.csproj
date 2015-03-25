@@ -29,6 +29,7 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="AfterBuild" command="cp ${TargetFile} ../GameData/LightsOut" workingdir="${SolutionDir}" />
+        <Command type="AfterBuild" command="xcopy ${TargetFile} . /Y" workingdir="${SolutionDir}/../GameData/LightsOut" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
