@@ -39,12 +39,34 @@ namespace LightsOut {
 			nightSkyboxMaterial = new Material(originalSkybox);
 
 			// GalaxyTex_PositiveX should be viewed outside window
-			nightSkyboxMaterial.SetTexture("_FrontTex", FindTexture("GalaxyTex_PositiveZ"));
-			nightSkyboxMaterial.SetTexture("_BackTex", FindTexture("GalaxyTex_NegativeZ"));
-			nightSkyboxMaterial.SetTexture("_LeftTex", FindTexture("GalaxyTex_PositiveX"));
-			nightSkyboxMaterial.SetTexture("_RightTex", FindTexture("GalaxyTex_NegativeX"));
-			nightSkyboxMaterial.SetTexture("_UpTex", FindTexture("GalaxyTex_NegativeY"));
-			nightSkyboxMaterial.SetTexture("_DownTex", FindTexture("GalaxyTex_PositiveY"));
+			Debug.Log("LightsOut: Loading Night Sky Textures");
+			foreach (Material material in Resources.FindObjectsOfTypeAll<Material>()) {
+				Texture texture = material.mainTexture;
+				if (texture) {
+					switch (material.name) {
+					case "ZP (Instance)":
+						nightSkyboxMaterial.SetTexture("_FrontTex", material.mainTexture);
+						break;
+					case "ZN (Instance)":
+						nightSkyboxMaterial.SetTexture("_BackTex", material.mainTexture);
+						break;
+					case "XP (Instance)":
+						nightSkyboxMaterial.SetTexture("_LeftTex", material.mainTexture);
+						break;
+					case "XN (Instance)":
+						nightSkyboxMaterial.SetTexture("_RightTex", material.mainTexture);
+						break;
+					case "YP (Instance)":
+						nightSkyboxMaterial.SetTexture("_UpTex", material.mainTexture);
+						break;
+					case "YN (Instance)":
+						nightSkyboxMaterial.SetTexture("_DownTex", material.mainTexture);
+						break;
+					default:
+						break;
+					}
+				}
+			}
 
 			skyCamera.AddComponent<Skybox>();
 			skyCamera.GetComponent<Skybox>().material = nightSkyboxMaterial;
@@ -128,17 +150,6 @@ namespace LightsOut {
 					skyCamera.transform.Rotate(-30, 90, -90, Space.World);
 				}
 			}
-		}
-
-		Texture2D FindTexture(string name) {
-			Texture2D[] textures = Resources.FindObjectsOfTypeAll(typeof(Texture2D)) as Texture2D[];
-
-			foreach (Texture2D texture in textures) {
-				if (texture.name == name) {
-					return texture;
-				}
-			}
-			return null;
 		}
 
 		void ChangeLayersRecursively(GameObject gameObject, int layer, string objectname) {
