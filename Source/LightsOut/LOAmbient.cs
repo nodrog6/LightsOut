@@ -18,6 +18,7 @@ namespace LightsOut {
 		Color originalAmbientLight;
 		LightmapData[] originalLightmapData;
 		Material originalSkybox;
+        float originalAmbientIntensity;
 
 		public LOAmbient(EditorFacility facility, EditorLevel level, GameObject[] gameObjects, Camera camera, int layer) {
 			mainCamera = camera;
@@ -29,14 +30,15 @@ namespace LightsOut {
 			originalAmbientLight = RenderSettings.ambientLight;
 			originalSkybox = RenderSettings.skybox;
 			originalLightmapData = LightmapSettings.lightmaps;
+            originalAmbientIntensity = RenderSettings.ambientIntensity;
 
 			// Create fake skybox
 			skyCamera = new GameObject("NightSkyboxCamera", typeof(Camera));
-			skyCamera.camera.depth = mainCamera.depth - 1;
-			skyCamera.camera.clearFlags = CameraClearFlags.Skybox;
-			skyCamera.camera.cullingMask = 0;
+            skyCamera.GetComponent<Camera>().depth = mainCamera.depth - 1;
+            skyCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
+            skyCamera.GetComponent<Camera>().cullingMask = 0;
 
-			nightSkyboxMaterial = new Material(originalSkybox);
+            nightSkyboxMaterial = new Material(originalSkybox);
 
 			// GalaxyTex_PositiveX should be viewed outside window
 			Debug.Log("LightsOut: Loading Night Sky Textures");
@@ -104,8 +106,8 @@ namespace LightsOut {
 						ChangeLayersRecursively(gameObject, newLayer, "Component_611_4");
 						ChangeLayersRecursively(gameObject, newLayer, "Component_611_5");
 						ChangeLayersRecursively(gameObject, newLayer, "Component_611_6");
-						//ChangeLayersRecursively(gameObject, newLayer, "Component_749_1"); // Glow from Side Lights!
-						//ChangeLayersRecursively(gameObject, newLayer, "Component_750_1"); // Lights!
+						ChangeLayersRecursively(gameObject, newLayer, "Component_749_1"); // Glow from Side Lights!
+						ChangeLayersRecursively(gameObject, newLayer, "Component_750_1"); // Lights!
 					}
 					break;
 				}
@@ -114,8 +116,10 @@ namespace LightsOut {
 
 		public void SetAmbientMode(EditorTime time) {
 			if (time == EditorTime.Night) {
-				RenderSettings.ambientLight = new Color(0.15f, 0.15f, 0.15f);
+                
+				RenderSettings.ambientLight = new Color(0.05f, 0.05f, 0.05f);
 				RenderSettings.fog = false;
+                RenderSettings.ambientIntensity = 0.05f;
 				mainCamera.clearFlags = CameraClearFlags.Nothing;
 				LightmapSettings.lightmaps = new LightmapData[] { };
 
@@ -125,6 +129,7 @@ namespace LightsOut {
 				RenderSettings.ambientLight = originalAmbientLight;
 				RenderSettings.fog = true;
 				RenderSettings.skybox = originalSkybox;
+                RenderSettings.ambientIntensity = originalAmbientIntensity;
 				mainCamera.clearFlags = originalClearFlags;
 				LightmapSettings.lightmaps = originalLightmapData;
 

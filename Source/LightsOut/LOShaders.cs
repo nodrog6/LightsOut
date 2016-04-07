@@ -23,7 +23,7 @@ namespace LightsOut {
 
 			List<string> defaultShaders = new List<string>() {
 				"KSP/Emissive/Specular",
-				"KSP/Emissive/Bumped",
+				"KSP/Bumped",
 				"KSP/Emissive/Diffuse"
 			};
 
