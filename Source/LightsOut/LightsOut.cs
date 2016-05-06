@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using KSP;
+using KSP.UI.Screens;
 
 namespace LightsOut {
 	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
@@ -132,7 +134,7 @@ namespace LightsOut {
 		void LateUpdate() {
 			if (launcherButtonNeedsInitializing) {
 				GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
-				OnGUIAppLauncherReady();
+//				OnGUIAppLauncherReady();
 				launcherButtonNeedsInitializing = false;
 			}
 			if ((ambientManager != null) && (currentTime == EditorTime.Night)) {

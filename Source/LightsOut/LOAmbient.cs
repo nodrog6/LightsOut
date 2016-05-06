@@ -31,10 +31,11 @@ namespace LightsOut {
 			originalLightmapData = LightmapSettings.lightmaps;
 
 			// Create fake skybox
-			skyCamera = new GameObject("NightSkyboxCamera", typeof(Camera));
-			skyCamera.camera.depth = mainCamera.depth - 1;
-			skyCamera.camera.clearFlags = CameraClearFlags.Skybox;
-			skyCamera.camera.cullingMask = 0;
+			skyCamera = new GameObject("NightSkyboxCamera");
+            skyCamera.AddComponent<Camera>();
+			skyCamera.GetComponent<Camera>().depth = mainCamera.depth - 1;
+            skyCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
+            skyCamera.GetComponent<Camera>().cullingMask = 0;
 
 			nightSkyboxMaterial = new Material(originalSkybox);
 
@@ -114,7 +115,7 @@ namespace LightsOut {
 
 		public void SetAmbientMode(EditorTime time) {
 			if (time == EditorTime.Night) {
-				RenderSettings.ambientLight = new Color(0.15f, 0.15f, 0.15f);
+				RenderSettings.ambientLight = new Color(0.1f, 0.1f, 0.1f);
 				RenderSettings.fog = false;
 				mainCamera.clearFlags = CameraClearFlags.Nothing;
 				LightmapSettings.lightmaps = new LightmapData[] { };
