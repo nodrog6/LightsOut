@@ -16,6 +16,7 @@ namespace LightsOut {
 		int originalCullingMask;
 		CameraClearFlags originalClearFlags;
 		Color originalAmbientLight;
+        UnityEngine.Rendering.AmbientMode originalAmbientMode;
 		LightmapData[] originalLightmapData;
 		Material originalSkybox;
 
@@ -29,10 +30,11 @@ namespace LightsOut {
 			originalAmbientLight = RenderSettings.ambientLight;
 			originalSkybox = RenderSettings.skybox;
 			originalLightmapData = LightmapSettings.lightmaps;
+            originalAmbientMode = RenderSettings.ambientMode;
 
 			// Create fake skybox
-			skyCamera = new GameObject("NightSkyboxCamera");
-            skyCamera.AddComponent<Camera>();
+			skyCamera = new GameObject("NightSkyboxCamera", typeof(Camera));
+//            skyCamera.AddComponent<Camera>();
 			skyCamera.GetComponent<Camera>().depth = mainCamera.depth - 1;
             skyCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
             skyCamera.GetComponent<Camera>().cullingMask = 0;
@@ -99,14 +101,14 @@ namespace LightsOut {
 					foreach (GameObject gameObject in gameObjects) {
 						// These are all subsets of model_sph_interior_lights_v16
 						// Component_611_1 to 6 is window reflection
-						ChangeLayersRecursively(gameObject, newLayer, "Component_611_1");
-						ChangeLayersRecursively(gameObject, newLayer, "Component_611_2");
-						ChangeLayersRecursively(gameObject, newLayer, "Component_611_3");
+//						ChangeLayersRecursively(gameObject, newLayer, "Component_611_1");
+//						ChangeLayersRecursively(gameObject, newLayer, "Component_611_2");
+//						ChangeLayersRecursively(gameObject, newLayer, "Component_611_3");
 						ChangeLayersRecursively(gameObject, newLayer, "Component_611_4");
 						ChangeLayersRecursively(gameObject, newLayer, "Component_611_5");
 						ChangeLayersRecursively(gameObject, newLayer, "Component_611_6");
-						//ChangeLayersRecursively(gameObject, newLayer, "Component_749_1"); // Glow from Side Lights!
-						//ChangeLayersRecursively(gameObject, newLayer, "Component_750_1"); // Lights!
+						ChangeLayersRecursively(gameObject, newLayer, "Component_749_1"); // Glow from Side Lights!
+						ChangeLayersRecursively(gameObject, newLayer, "Component_750_1"); // Lights!
 					}
 					break;
 				}
@@ -115,7 +117,8 @@ namespace LightsOut {
 
 		public void SetAmbientMode(EditorTime time) {
 			if (time == EditorTime.Night) {
-				RenderSettings.ambientLight = new Color(0.1f, 0.1f, 0.1f);
+				RenderSettings.ambientLight = new Color(0.15f, 0.15f, 0.15f);
+                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
 				RenderSettings.fog = false;
 				mainCamera.clearFlags = CameraClearFlags.Nothing;
 				LightmapSettings.lightmaps = new LightmapData[] { };
@@ -125,6 +128,7 @@ namespace LightsOut {
 			else {
 				RenderSettings.ambientLight = originalAmbientLight;
 				RenderSettings.fog = true;
+                RenderSettings.ambientMode = originalAmbientMode;
 				RenderSettings.skybox = originalSkybox;
 				mainCamera.clearFlags = originalClearFlags;
 				LightmapSettings.lightmaps = originalLightmapData;
