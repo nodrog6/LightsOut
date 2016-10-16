@@ -1,13 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using KSP;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using KSP.UI.Screens;
 
 namespace LightsOut {
 	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
 
 	class LightsOut : MonoBehaviour {
+		private static LightsOut Instance;
 		EditorTime currentTime = EditorTime.Day;
 		bool currentPartLightsEnabled = false;
 		bool firstTime = true;
@@ -18,12 +20,31 @@ namespace LightsOut {
 		LOExternalLights externalLightsManager;
 
 		ApplicationLauncherButton launcherButton;
-		bool launcherButtonNeedsInitializing = true;
+//		bool launcherButtonNeedsInitializing = true;
 		string munIcon = "LightsOut/Textures/mun_icon";
 		string sunIcon = "LightsOut/Textures/sun_icon";
 
+		public void Awake()
+		{
+			if (Instance != null) {
+				Destroy (this);
+				return;
+			}
+			Instance = this;
+		}
+
+		public void Start() {
+			GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+		}
+
+		void OnDestroy() {
+			GameEvents.onGUIApplicationLauncherReady.Remove (OnGUIAppLauncherReady);
+			if (launcherButton != null)
+				ApplicationLauncher.Instance.RemoveModApplication (launcherButton);
+		}
+
 		void OnGUIAppLauncherReady() {
-			if (ApplicationLauncher.Ready) {
+			if (launcherButton == null) {
 				launcherButton = ApplicationLauncher.Instance.AddModApplication(
 					ToggleDayNight,
 					ToggleDayNight,
@@ -40,25 +61,23 @@ namespace LightsOut {
 			SetTime((currentTime == EditorTime.Day) ? EditorTime.Night : EditorTime.Day);
 		}
 
-		void OnDestroy() {
-			if (launcherButton != null) {
-				ApplicationLauncher.Instance.RemoveModApplication(launcherButton);
-			}
-			GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
-			launcherButtonNeedsInitializing = true;
-		}
-
 		void Update() {
-			if (Input.GetKeyDown(KeyCode.L)) {
-				SetTime((currentTime == EditorTime.Day) ? EditorTime.Night : EditorTime.Day);
-			}
-			else if (Input.GetKeyDown(KeyCode.U)) {
-				SetPartLights(!currentPartLightsEnabled);
+			// Ignore keystrokes when a text field has focus (e.g. part search, craft title box)
+			GameObject obj = EventSystem.current.currentSelectedGameObject;
+			bool inputFieldIsFocused = (obj != null && obj.GetComponent<InputField> () != null && obj.GetComponent<InputField> ().isFocused);
+			if (inputFieldIsFocused)
+				return;
+
+			// changed from L to P, to avoid conflicts with RCS Build Aid (translation keys) and RPM Camera (toggle all camera FOV's)
+			if (Input.GetKeyDown (KeyCode.P)) {
+				SetTime ((currentTime == EditorTime.Day) ? EditorTime.Night : EditorTime.Day);
+			} else if (Input.GetKeyDown (KeyCode.U)) {
+				SetPartLights (!currentPartLightsEnabled);
 			}
 		}
 
 		void Setup() {
-			Debug.Log("LightsOut: First Time Setup");
+//			Debug.Log("LightsOut: First Time Setup");
 
 			EditorFacility facility = EditorDriver.editorFacility;
 			EditorLevel level = 0;
@@ -75,7 +94,7 @@ namespace LightsOut {
 				break;
 			}
 
-			Debug.Log("LightsOut: Entered " + facility + " " + level);
+//			Debug.Log("LightsOut: Entered " + facility + " " + level);
 
 			// Set up ambient and shader managers
 			GameObject[] gameObjects = FindObjectsOfType(typeof(GameObject)) as GameObject[];
@@ -97,21 +116,21 @@ namespace LightsOut {
 			}
 			currentTime = newTime;
 
-			Debug.Log("LightsOut: Switching to " + newTime + " Mode");
+//			Debug.Log("LightsOut: Switching to " + newTime + " Mode");
 
 			// Toggle Shaders
-			Debug.Log("LightsOut: Updating Shaders");
+//			Debug.Log("LightsOut: Updating Shaders");
 			shaderManager.SetShaderMode(newTime);
 
 			// Toggle ambient settings
-			Debug.Log("LightsOut: Updating Ambient Light and Skybox");
+//			Debug.Log("LightsOut: Updating Ambient Light and Skybox");
 			ambientManager.SetAmbientMode(newTime);
 
 			//toggle VAB/SPH lights
-			Debug.Log("LightsOut: Updating VAB/SPH Lights");
+//			Debug.Log("LightsOut: Updating VAB/SPH Lights");
 			externalLightsManager.SetExternalLightsMode(newTime, FindObjectsOfType(typeof(Light)) as Light[]);
 
-			// Toggle all part lights
+			// Toggle all part lights*/
 			SetPartLights(newTime == EditorTime.Night);
 
 			if (newTime == EditorTime.Night) {
@@ -124,23 +143,34 @@ namespace LightsOut {
 
 		void SetPartLights(bool lightsEnabled) {
 			currentPartLightsEnabled = lightsEnabled;
-			Debug.Log("LightsOut: Turning Part Lights " + (lightsEnabled ? "on" : "off"));
-			List<Part> shipParts = EditorLogic.fetch.ship.parts;
-			foreach (Part part in shipParts) {
-				part.SendEvent(lightsEnabled ? "LightsOn" : "LightsOff");
+//			Debug.Log("LightsOut: Turning Part Lights " + (lightsEnabled ? "on" : "off"));
+			foreach (Part part in EditorLogic.fetch.ship.parts) {
+				// Lights
+				if (part.FindModuleImplementing<ModuleLight>() != null)
+					part.SendEvent(lightsEnabled ? "LightsOn" : "LightsOff");
+
+				// Pods
+				foreach (ModuleColorChanger changer in part.FindModulesImplementing<ModuleColorChanger>())
+					if (changer.defaultActionGroup == KSPActionGroup.Light)
+						changer.animState = lightsEnabled; //changer.ToggleEvent();
+
+				// Cabins, can be toggled only
+				foreach (ModuleAnimateGeneric animator in part.FindModulesImplementing<ModuleAnimateGeneric>()) {
+					if (animator.defaultActionGroup == KSPActionGroup.Light)
+						animator.Toggle ();
+				}
 			}
 		}
 
 		void LateUpdate() {
-			if (launcherButtonNeedsInitializing) {
-				GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
-//				OnGUIAppLauncherReady();
-				launcherButtonNeedsInitializing = false;
-			}
+//			if (launcherButtonNeedsInitializing) {
+//				GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+////				OnGUIAppLauncherReady();
+//				launcherButtonNeedsInitializing = false;
+//			}
 			if ((ambientManager != null) && (currentTime == EditorTime.Night)) {
 				ambientManager.rotateSkybox();
 			}
 		}
 	}
 }
-

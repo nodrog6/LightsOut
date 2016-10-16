@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace LightsOut {
@@ -42,27 +42,27 @@ namespace LightsOut {
 			nightSkyboxMaterial = new Material(originalSkybox);
 
 			// GalaxyTex_PositiveX should be viewed outside window
-			Debug.Log("LightsOut: Loading Night Sky Textures");
+			// Debug.Log("LightsOut: Loading Night Sky Textures");
 			foreach (Material material in Resources.FindObjectsOfTypeAll<Material>()) {
 				Texture texture = material.mainTexture;
 				if (texture) {
 					switch (material.name) {
-					case "ZP (Instance)":
+					case "ZP":
 						nightSkyboxMaterial.SetTexture("_FrontTex", material.mainTexture);
 						break;
-					case "ZN (Instance)":
+					case "ZN":
 						nightSkyboxMaterial.SetTexture("_BackTex", material.mainTexture);
 						break;
-					case "XP (Instance)":
+					case "XP":
 						nightSkyboxMaterial.SetTexture("_LeftTex", material.mainTexture);
 						break;
-					case "XN (Instance)":
+					case "XN":
 						nightSkyboxMaterial.SetTexture("_RightTex", material.mainTexture);
 						break;
-					case "YP (Instance)":
+					case "YP":
 						nightSkyboxMaterial.SetTexture("_UpTex", material.mainTexture);
 						break;
-					case "YN (Instance)":
+					case "YN":
 						nightSkyboxMaterial.SetTexture("_DownTex", material.mainTexture);
 						break;
 					default:
