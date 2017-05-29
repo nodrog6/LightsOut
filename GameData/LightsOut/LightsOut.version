@@ -1,0 +1,35 @@
+{
+    "NAME"     : "Lights Out",
+    "URL"      : "https://raw.githubusercontent.com/Real-Gecko/LightsOut/master/GameData/LightsOut/LightsOut.version",
+    "DOWNLOAD" : "https://github.com/Real-Gecko/LightsOut/releases",
+    "GITHUB" :
+    {
+        "USERNAME" : "Real-Gecko",
+        "REPOSITORY" : "LightsOut"
+    },
+    "VERSION" :
+    {
+        "MAJOR" : 0,
+        "MINOR" : 2,
+        "PATCH" : 1,
+        "BUILD" : 0
+    },
+    "KSP_VERSION" :
+    {
+        "MAJOR" : 1,
+        "MINOR" : 3,
+        "PATCH" : 0
+    },
+    "KSP_VERSION_MIN" :
+    {
+        "MAJOR" : 1,
+        "MINOR" : 3,
+        "PATCH" : 0
+    },
+    "KSP_VERSION_MAX" :
+    {
+        "MAJOR" : 1,
+        "MINOR" : 3,
+        "PATCH" : 0
+    }
+}
