@@ -43,10 +43,11 @@ namespace LightsOut {
 
 			// GalaxyTex_PositiveX should be viewed outside window
 			// Debug.Log("LightsOut: Loading Night Sky Textures");
-			foreach (Material material in Resources.FindObjectsOfTypeAll<Material>()) {
+			foreach (Renderer renderer in GalaxyCubeControl.Instance.GetComponentsInChildren<Renderer>()) {
+				Material material = renderer.material;
 				Texture texture = material.mainTexture;
 				if (texture) {
-					switch (material.name) {
+					switch (renderer.name) {
 					case "ZP":
 						nightSkyboxMaterial.SetTexture("_FrontTex", material.mainTexture);
 						break;
